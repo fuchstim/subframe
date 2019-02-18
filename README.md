@@ -1,4 +1,4 @@
-[![fuchstim.de - Logo](https://fcdn.ftim.eu/res/img/logo_medium.png)](https://www.fuchstim.de)
+[![fuchstim.de - Logo](https://fcdn.ftim.eu/res/img/logo_medium.png)](https://www.fuchstim.de)![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-nobg_medium.png)
 # SuBFraMe Messaging Framework
 #### What is SubFraMe?
 SuBFraMe stands for **S**ec**u**rely **B**roadcasted and **Fra**gmented **Me**ssaging. It is a concept for an entirely decentralized network used primarily for email-like communication and static file-sharing.
