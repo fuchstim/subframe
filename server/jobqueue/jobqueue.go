@@ -27,10 +27,10 @@ func (sw worker) start() {
 			workerCount := len(workerPool)
 			queueLength := len(Queue)
 
-			if workerCount < settings.MaxWorkers && queueLength >= settings.MaxQueueLength {
+			if workerCount < settings.MaxWorkers && queueLength >= settings.QueueMaxLength {
 				println("Spawning new Worker...")
 				SpawnWorker()
-			} else if workerCount > 1 && queueLength <= settings.MaxQueueLength {
+			} else if workerCount > 1 && queueLength <= settings.QueueMaxLength {
 				println("Killing Worker")
 				sw.die <- true
 			}

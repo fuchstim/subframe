@@ -101,10 +101,10 @@ func (r storageRequest) handleGet() {
 
 func (r storageRequest) handlePut() {
 	messageID := r.messageID
-	r.req.Body = http.MaxBytesReader(r.res, r.req.Body, settings.MaxMessageSize*1024*1024)
+	r.req.Body = http.MaxBytesReader(r.res, r.req.Body, settings.MessageMaxSize*1024*1024)
 	messageBody, error := ioutil.ReadAll(r.req.Body)
 	if error != nil {
-		if int64(len(messageBody)) >= settings.MaxMessageSize*1024*1024 {
+		if int64(len(messageBody)) >= settings.MessageMaxSize*1024*1024 {
 			writeResponse(r.res, http.StatusRequestEntityTooLarge, "Message too large to be accepted by this node")
 			return
 		}

@@ -9,3 +9,8 @@ func Init() {
 	//Start CoordinatorNode service
 
 }
+
+//Stop terminates and stops all active network connections and interfaces
+func Stop() {
+
+}

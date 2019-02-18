@@ -22,6 +22,11 @@ func Init() {
 	createDirIfNotExist(databasePath)
 }
 
+//Finish might do something soon
+func Finish() {
+
+}
+
 //Get loads a message from local disk
 func Get(id string) (msg message.Message, status int) {
 	//Read message from disk and return
@@ -63,6 +68,7 @@ func Delete(id string) (status int) {
 }
 
 func createDirIfNotExist(dir string) {
+	//TODO: Fix error on windows reporting directories exists when they do not
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
