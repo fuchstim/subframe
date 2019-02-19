@@ -1,4 +1,4 @@
-[![fuchstim.de - Logo](https://fcdn.ftim.eu/res/img/logo_medium.png)](https://www.fuchstim.de)![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-nobg_medium.png)
+![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-nobg_medium.png)
 # SuBFraMe Messaging Framework
 
 1. [What is SuBFraMe?](#what-is-subframe)
