@@ -2,7 +2,7 @@
 # How to Contribute to the SuBFraMe Project
 Here, You will find a guide on how to contribute to the SuBFraMe Project. These Information might be subject to change, so it might be useful to check back every once and again!
 
-If you wish to contribute anything not neccessarily related to programming, please do not hesitate to seek contact! You can do so via [EMail](mailto:subframe@gp.ftim.eu) or via [our Discord-Server](https://discord-link-coming-soon.com)
+If you wish to contribute anything not neccessarily related to programming (e.g. Fixing Typos, Documentation, Testing, Building a Website, etc.), please do not hesitate to seek contact! You can do so via [EMail](mailto:subframe@gp.ftim.eu) or via [our Discord-Server](https://discord-link-coming-soon.com)
 
 #### Table of Contents
 1. [Setting up Your Environment](#setting-up-your-environment)
