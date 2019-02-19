@@ -46,8 +46,8 @@ func Init() {
 
 	//Create Tables for coordinatorDatabase
 	statement = `
-	CREATE TABLE IF NOT EXISTS storageNodes(address varchar(255) not null primary key);
-	CREATE TABLE IF NOT EXISTS coordinatorNodes(address varchar(255) not null primary key);
+	CREATE TABLE IF NOT EXISTS storageNodes(address varchar(255) not null primary key, lastPing int not null);
+	CREATE TABLE IF NOT EXISTS coordinatorNodes(address varchar(255) not null primary key, lastPing int not null);
 	CREATE TABLE IF NOT EXISTS messages(id varchar(255) not null, storageNode varchar(255) not null, reportedOn timestamp not null, verifiedOn timestamp);
 	`
 	_, err = coordinatorDB.Exec(statement)
@@ -115,10 +115,60 @@ func CheckDueMessageStatusStorage() {
 	//remove all messages which have been received before now - settings.MessageMaxStoreTime
 }
 
+//AddStorageNode adds a StorageNode to the local database
+func AddStorageNode(address string, ping int) (status int) {
+	query := "INSERT INTO storageNodes(address, lastPing) VALUES (?,?)"
+	stmt, err := coordinatorDB.Prepare(query)
+	if err != nil {
+		return http.StatusInternalServerError
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(address, ping)
+	if err != nil {
+		return http.StatusInternalServerError
+	}
+	return http.StatusOK
+}
+
 //GetStorageNodes returns known StorageNodes
 func GetStorageNodes(limit int) (storageNodes []string) {
 	var nodes []string
 	query := "SELECT address FROM storageNodes LIMIT " + strconv.Itoa(limit)
+	rows, err := coordinatorDB.Query(query)
+	if err != nil {
+		return nodes
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var address string
+		err = rows.Scan(&address)
+		if err != nil {
+			return nodes
+		}
+		nodes = append(nodes, address)
+	}
+	return nodes
+}
+
+//AddCoordinatorNode adds a CoordinatorNode to the local database
+func AddCoordinatorNode(address string, ping int) (status int) {
+	query := "INSERT INTO coordinatorNodes(address, lastPing) VALUES (?,?)"
+	stmt, err := coordinatorDB.Prepare(query)
+	if err != nil {
+		return http.StatusInternalServerError
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(address, ping)
+	if err != nil {
+		return http.StatusInternalServerError
+	}
+	return http.StatusOK
+}
+
+//GetCoordinatorNodes returns known CoordinatorNodes
+func GetCoordinatorNodes() (storageNodes []string) {
+	var nodes []string
+	query := "SELECT address FROM coordinatorNodes"
 	rows, err := coordinatorDB.Query(query)
 	if err != nil {
 		return nodes
