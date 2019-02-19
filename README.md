@@ -1,7 +1,23 @@
 [![fuchstim.de - Logo](https://fcdn.ftim.eu/res/img/logo_medium.png)](https://www.fuchstim.de)![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-nobg_medium.png)
 # SuBFraMe Messaging Framework
+
+1. [What is SuBFraMe?](#what-is-subframe)
+2. [Download and Install](#download-and-install)
+3. [Contributing](#contributing)
+4. [How does it work?](#how-does-it-work)
+5. [Sending a Message](#sending-a-message)
+6. [Advantages and Disadvantages](#advantages)
+
 #### What is SubFraMe?
 SuBFraMe stands for **S**ec**u**rely **B**roadcasted and **Fra**gmented **Me**ssaging. It is a concept for an entirely decentralized network used primarily for email-like communication and static file-sharing.
+
+#### Download and Install
+Currently, there is no working Version of SuBFraMe available. If you wish to contribute to make SuBFraMe a reality, see [#Contributing](#contributing)
+
+#### Contributing
+If you are interested in the SuBFraMe Project and want to contribute, you can find a guide to get you set up in the [CONTRIBUTING.md](CONTRIBUTING.MD) file.
+Any help is greatly appreciated and will help make communication more secure and uncensored!
+
 #### How does it work?
 The SubFraMe Network consists of two kinds of Nodes: StorageNodes and CoordinatorNodes (SN and CN respectively). CNs represent a small fragment of and are therefore part of the SN-Network. 
 ##### StorageNodes
