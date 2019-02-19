@@ -15,7 +15,7 @@ SuBFraMe stands for **S**ec**u**rely **B**roadcasted and **Fra**gmented **Me**ss
 Currently, there is no working Version of SuBFraMe available. If you wish to contribute to make SuBFraMe a reality, see [#Contributing](#contributing)
 
 #### Contributing
-If you are interested in the SuBFraMe Project and want to contribute, you can find a guide to get you set up in the [CONTRIBUTING.md](CONTRIBUTING.MD) file.
+If you are interested in the SuBFraMe Project and want to contribute, you can find a guide to get you set up in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 Any help is greatly appreciated and will help make communication more secure and uncensored!
 
 #### How does it work?
