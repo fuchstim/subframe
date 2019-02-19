@@ -10,7 +10,7 @@
 6. [Advantages and Disadvantages](#advantages)
 
 #### What is SubFraMe?
-SuBFraMe stands for **S**ec**u**rely **B**roadcasted and **Fra**gmented **Me**ssaging. It is a concept for an entirely decentralized network used primarily for email-like communication and static file-sharing.
+SuBFraMe stands for **S**ec**u**rely **B**roadcasted and **Fra**gmented **Me**ssaging. It is a concept for an entirely decentralized, extensible network used primarily for email-like communication.
 
 #### Download and Install
 Currently, there is no working Version of SuBFraMe available. If you wish to contribute to make SuBFraMe a reality, see [#Contributing](#contributing)
