@@ -9,7 +9,7 @@ When a message is to be sent, it is transmitted to a StorageNode. This Node will
 A StorageNode periodically tries to register as a CoordinatorNode, to fill any open positions in the CoordinatorNetwork. A successful registration will sync the CoordinatorNetwork Database to the StorageNode.
 StorageNodes with a good connection will be prioritized on registration as CoordinatorNode, as well as being selected as StorageNode for a Message.
 ##### CoordinatorNodes
-The Coordinator-Network represent the 'Brain' of the SubFraMe Network, and is strictly limited in size. It possesses a synchronous database keeping track of known Messages and their StorageNodes. That way, when a recipient requests a list of new Messages, it can query any CoordinatorNode and get a list of relevant Messages and their Storage Locations.
+The Coordinator-Network represents the 'Brain' of the SubFraMe Network, and is strictly limited in size. It possesses a synchronous database keeping track of known Messages and their StorageNodes. That way, when a recipient requests a list of new Messages, it can query any CoordinatorNode and get a list of relevant Messages and their Storage Locations.
 CoordinatorNodes with a bad connection may be kicked from the CoordinatorNetwork, yet still function as a StorageNode.
 
 #### Sending a Message
@@ -59,7 +59,7 @@ CoordinatorNodes with a bad connection may be kicked from the CoordinatorNetwork
 
 #### Disadvantages
 -  Message Propagation can be rather slow. making real-time-communication not possible
--  Pushing messages to the recipients device is not possible, it will have to query the CoordinatorNetwork for new Messages
+-  Pushing messages to the recipients device is not possible, it will have to query the CoordinatorNetwork for new Messages 
 -  Sender's identify cannot be reliably verified without a secure way of exchanging PublicKeys; meeting physically and using uncompromised systems
--  Using multiple devices to receive messages from the same address will be rather complicated, as the message is removed from the Network once it has been decrypted and verified, or reached its TTL
+-  Using multiple devices to receive messages for the same address will be rather complicated, as the message is removed from the Network once it has been decrypted and verified, or reached its TTL
 -  ...
