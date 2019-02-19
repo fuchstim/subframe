@@ -1,6 +1,7 @@
 ![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-nobg_medium.png)
 # SuBFraMe Messaging Framework
 
+#### Table of Contents
 1. [What is SuBFraMe?](#what-is-subframe)
 2. [Download and Install](#download-and-install)
 3. [Contributing](#contributing)
