@@ -4,7 +4,7 @@
 #### Table of Contents
 1. [What is SuBFraMe?](#what-is-subframe)
 2. [Download and Install](#download-and-install)
-3. [Contributing](#contributing)
+3. [Contributing](CONTRIBUTING.md)
 4. [How does it work?](#how-does-it-work)
 5. [Sending a Message](#sending-a-message)
 6. [Advantages and Disadvantages](#advantages)
