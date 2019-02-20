@@ -1,4 +1,4 @@
-![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-text-contour_small.png#)
+![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-text_small.png#)
 # SuBFraMe Messaging Framework
 
 #### Table of Contents
