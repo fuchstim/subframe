@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"subframe/server/database"
 	"subframe/server/settings"
 	"subframe/server/storage"
 	"subframe/structs/message"
@@ -16,6 +17,7 @@ import (
 var storageNodeActions = []string{
 	"get",
 	"put",
+	"control",
 }
 
 func startStorageNodeAPIService() {
@@ -52,8 +54,11 @@ type storageRequest struct {
 
 func (r *storageRequest) parsePath() (status int) {
 	parts := strings.Split(r.req.URL.Path, "/")
-	if len(parts) < 3 {
+	if len(parts) < 2 {
 		return http.StatusBadRequest
+	} else if len(parts) < 3 {
+		r.action = parts[2]
+		return http.StatusOK
 	}
 	r.action = parts[2]
 	r.messageID = regexp.MustCompile("[^A-Za-z0-9]").ReplaceAllString(parts[3], "-")
@@ -82,6 +87,8 @@ func (r storageRequest) handle() {
 		r.handleGet()
 	case "put":
 		r.handlePut()
+	case "control":
+		r.handleControl()
 	}
 }
 
@@ -126,8 +133,36 @@ func (r storageRequest) handlePut() {
 
 	writeResponse(r.res, http.StatusOK, "Successfully stored message "+messageID)
 
-	//Announce Message to CoordinatorNetwork
-	//Push Message to other StorageNodes
+	//TODO: Announce Message to CoordinatorNetwork
+	//TODO: Push Message to other StorageNodes
+}
+
+func (r storageRequest) handleControl() {
+	action := r.messageID
+	switch action {
+	case "get-storage-nodes":
+		r.printStorageNodes()
+	case "get-coordinator-nodes":
+		r.printCoordinatorNodes()
+	}
+}
+
+func (r storageRequest) printStorageNodes() {
+	storageNodes := database.GetStorageNodes(10)
+	response, err := json.Marshal(storageNodes)
+	if err != nil {
+		writeResponse(r.res, http.StatusInternalServerError, "Failed to export StorageNodes.")
+	}
+	writeResponse(r.res, http.StatusOK, string(response))
+}
+
+func (r storageRequest) printCoordinatorNodes() {
+	coordinatorNodes := database.GetCoordinatorNodes()
+	response, err := json.Marshal(coordinatorNodes)
+	if err != nil {
+		writeResponse(r.res, http.StatusInternalServerError, "Failed to export CoordinatorNodes.")
+	}
+	writeResponse(r.res, http.StatusOK, string(response))
 }
 
 func writeResponse(w http.ResponseWriter, status int, response string) {

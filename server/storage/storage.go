@@ -67,6 +67,7 @@ func Delete(id string) (status int) {
 	return http.StatusOK
 }
 
+//Creates Directory if it does not yet exist
 func createDirIfNotExist(dir string) {
 	//TODO: Fix error on windows reporting directories exists when they do not
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -77,12 +78,14 @@ func createDirIfNotExist(dir string) {
 	}
 }
 
+//Check whether Size of Data Directory exceeds size limit set in settings.DiskSpace
 func checkStorageSpace(size int) bool {
 	dirsize, _ := dirSize(messagesPath)
 	dirsize += int64(size)
 	return dirsize/1024/1024 < int64(settings.DiskSpace)
 }
 
+//Get Size of Directory
 func dirSize(path string) (int64, error) {
 	var size int64
 	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {

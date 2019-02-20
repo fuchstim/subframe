@@ -184,3 +184,13 @@ func GetCoordinatorNodes() (storageNodes []string) {
 	}
 	return nodes
 }
+
+//ClearNodeTables removes all elements from storageNodes and coordinatorNodes tables, for bootstrapping
+func ClearNodeTables() (status int) {
+	query := "DELETE FROM storageNodes; DELETE FROM coordinatorNodes"
+	_, err := coordinatorDB.Exec(query)
+	if err != nil {
+		return http.StatusInternalServerError
+	}
+	return http.StatusOK
+}
