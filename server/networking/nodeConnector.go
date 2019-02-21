@@ -30,11 +30,11 @@ func sendStorageNodeRequest(address string, queryString string, data string) (re
 	var err error
 	if data == "" {
 		//There is no data to be POSTed, send GET Request
-		resp, err := http.Get(address + "/storage" + queryString)
+		resp, err = http.Get(address + "/storage" + queryString)
 
 	} else {
 		//There is data to be POSTed, send POST Request
-		resp, err := http.Post(address+"/storage"+queryString, "raw", bytes.NewBufferString(data))
+		resp, err = http.Post(address+"/storage"+queryString, "raw", bytes.NewBufferString(data))
 	}
 	if err != nil {
 		return ""
