@@ -16,9 +16,9 @@ var databasePath string
 //Init intializes the data directory
 func Init() {
 	createDirIfNotExist(settings.DataPath)
-	messagesPath = settings.DataPath + "/messages/"
+	messagesPath = settings.DataPath + "/messages"
 	createDirIfNotExist(messagesPath)
-	databasePath = settings.DataPath + "/databases/"
+	databasePath = settings.DataPath + "/databases"
 	createDirIfNotExist(databasePath)
 }
 
@@ -70,7 +70,9 @@ func Delete(id string) (status int) {
 //Creates Directory if it does not yet exist
 func createDirIfNotExist(dir string) {
 	//TODO: Fix error on windows reporting directories exists when they do not
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
+	_, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		fmt.Println(dir + " does not exist")
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
 			panic(err)

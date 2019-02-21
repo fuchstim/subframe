@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"subframe/server/database"
+	"subframe/server/networking"
 	"subframe/server/settings"
 	"subframe/server/storage"
 	"subframe/structs/message"
@@ -133,8 +134,24 @@ func (r storageRequest) handlePut() {
 
 	writeResponse(r.res, http.StatusOK, "Successfully stored message "+messageID)
 
-	//TODO: Announce Message to CoordinatorNetwork
-	//TODO: Push Message to other StorageNodes
+	task := func(data interface{}) {
+		messageID, ok := data.(string)
+		if !ok {
+			return
+		}
+		//Announce MessageID to CoordinatorNetwork
+		redistribute := networking.SendNodeRequest(networking.NODE_COORDINATOR, "/announce/"+messageID+"/"+settings.InterfaceAddress)
+		if redistribute == "true" {
+			//TODO: Push Message to other StorageNodes
+		}
+	}
+	job := jobqueue.Job {
+		Task: task,
+		Data: messageID
+	}
+	select {
+	case jobqueue.Queue <- job:
+	}	
 }
 
 func (r storageRequest) handleControl() {
