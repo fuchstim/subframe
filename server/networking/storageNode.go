@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"subframe/server/database"
-	"subframe/server/networking"
+	"subframe/server/jobqueue"
 	"subframe/server/settings"
 	"subframe/server/storage"
 	"subframe/structs/message"
@@ -18,6 +18,7 @@ import (
 var storageNodeActions = []string{
 	"get",
 	"put",
+	"update",
 	"control",
 }
 
@@ -90,6 +91,8 @@ func (r storageRequest) handle() {
 		r.handlePut()
 	case "control":
 		r.handleControl()
+	case "update":
+		r.updateMessageStatus()
 	}
 }
 
@@ -139,19 +142,25 @@ func (r storageRequest) handlePut() {
 		if !ok {
 			return
 		}
+
+		//Get three random coordinatorNodes
+		coordinatorNodes := database.GetRandomCoordinatorNodes(3)
 		//Announce MessageID to CoordinatorNetwork
-		redistribute := networking.SendNodeRequest(networking.NODE_COORDINATOR, "/announce/"+messageID+"/"+settings.InterfaceAddress)
+		var redistribute string
+		for _, value := range coordinatorNodes {
+			redistribute = SendNodeRequest(NODE_COORDINATOR, value, "/announce/"+messageID+"/"+settings.InterfaceAddress, "")
+		}
 		if redistribute == "true" {
 			//TODO: Push Message to other StorageNodes
 		}
 	}
-	job := jobqueue.Job {
+	job := jobqueue.Job{
 		Task: task,
-		Data: messageID
+		Data: messageID,
 	}
 	select {
 	case jobqueue.Queue <- job:
-	}	
+	}
 }
 
 func (r storageRequest) handleControl() {
@@ -180,6 +189,29 @@ func (r storageRequest) printCoordinatorNodes() {
 		writeResponse(r.res, http.StatusInternalServerError, "Failed to export CoordinatorNodes.")
 	}
 	writeResponse(r.res, http.StatusOK, string(response))
+}
+
+func (r storageRequest) updateMessageStatus() {
+	messageID := r.messageID
+
+	job := jobqueue.Job{
+		Task: func(data interface{}) {
+			messageID, ok := data.(string)
+			if ok {
+				status := GetMessageStatus(messageID)
+				if status > -1 {
+					database.UpdateMessageStatusStorage(messageID, status)
+				}
+			}
+		},
+		Data: messageID,
+	}
+
+	select {
+	case jobqueue.Queue <- job:
+	}
+
+	writeResponse(r.res, http.StatusOK, "OK")
 }
 
 func writeResponse(w http.ResponseWriter, status int, response string) {

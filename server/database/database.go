@@ -36,7 +36,12 @@ func Init() {
 
 	//Create Tables for storageDatabase
 	statement := `
-	CREATE TABLE IF NOT EXISTS messages(id varchar(255) not null primary key, receivedOn timestamp not null, expiresOn timestamp not null, lastCheck timestamp);
+	CREATE TABLE IF NOT EXISTS messages(
+		id varchar(255) not null primary key, 
+		verified tinyint not null default 0, 
+		expiresOn timestamp not null, 
+		lastCheck timestamp
+	);
 	`
 	_, err = storageDB.Exec(statement)
 	if err != nil {
@@ -46,9 +51,20 @@ func Init() {
 
 	//Create Tables for coordinatorDatabase
 	statement = `
-	CREATE TABLE IF NOT EXISTS storageNodes(address varchar(255) not null primary key, lastPing int not null);
-	CREATE TABLE IF NOT EXISTS coordinatorNodes(address varchar(255) not null primary key, lastPing int not null);
-	CREATE TABLE IF NOT EXISTS messages(id varchar(255) not null, storageNode varchar(255) not null, reportedOn timestamp not null, verifiedOn timestamp);
+	CREATE TABLE IF NOT EXISTS storageNodes(
+		address varchar(255) not null primary key, 
+		lastPing int not null
+	);
+	CREATE TABLE IF NOT EXISTS coordinatorNodes(
+		address varchar(255) not null primary key, 
+		lastPing int not null
+	);
+	CREATE TABLE IF NOT EXISTS messages(
+		id varchar(255) not null, 
+		storageNode varchar(255) not null, 
+		reportedOn timestamp not null, 
+		verified tinyint not null default 0
+	);
 	`
 	_, err = coordinatorDB.Exec(statement)
 	if err != nil {
@@ -185,6 +201,14 @@ func GetCoordinatorNodes() (storageNodes []string) {
 	return nodes
 }
 
+//GetRandomCoordinatorNodes returns max <number> random CoordinatorNodes
+func GetRandomCoordinatorNodes(max int) (nodes []string) {
+	//TODO: Return random CoordinatorNodes
+
+	result := []string{"node1", "node2", "node3"}
+	return result
+}
+
 //ClearNodeTables removes all elements from storageNodes and coordinatorNodes tables, for bootstrapping
 func ClearNodeTables() (status int) {
 	query := "DELETE FROM storageNodes; DELETE FROM coordinatorNodes"
@@ -193,4 +217,15 @@ func ClearNodeTables() (status int) {
 		return http.StatusInternalServerError
 	}
 	return http.StatusOK
+}
+
+//UpdateMessageStatusStorage updates the status of a message in the local database
+func UpdateMessageStatusStorage(messageID string, status int) {
+	query := "UPDATE messages SET verified=? WHERE id=?"
+	stmt, err := storageDB.Prepare(query)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	stmt.Exec(status, messageID)
 }
