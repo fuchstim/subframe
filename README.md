@@ -13,7 +13,7 @@
 SuBFraMe stands for **S**ec**u**rely **B**roadcasted and **Fra**gmented **Me**ssaging. It is a concept for an entirely decentralized, extensible network used primarily for email-like communication.
 
 #### Download and Install
-Currently, there is no working Version of SuBFraMe available. If you wish to contribute to make SuBFraMe a reality, see [#Contributing](#contributing)
+Currently, there is no (usable) working Version of SuBFraMe available. If you are interested in contributing to make SuBFraMe a reality, see [#Contributing](#contributing)
 
 #### Contributing
 If you are interested in the SuBFraMe Project and want to contribute, you can find a guide on how to get you set up in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
