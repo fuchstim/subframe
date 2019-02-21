@@ -18,6 +18,7 @@ Currently, there is no working Version of SuBFraMe available. If you wish to con
 #### Contributing
 If you are interested in the SuBFraMe Project and want to contribute, you can find a guide on how to get you set up in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 Any help is greatly appreciated and will help make communication more secure and uncensored!
+**If you want to actively support and contribute to the SuBFraMe - Project,** please consider joining [our Discord](https://discord.gg/HwTebxs). This is not required, but makes communication easier and helps to resolve questions, uncertainties or problems. Discord is free to use, can be used completely in-browser and is substancially faster than #Slack.
 
 #### How does it work?
 The SubFraMe Network consists of two kinds of Nodes: StorageNodes and CoordinatorNodes (SN and CN respectively). CNs represent a small fragment of and are therefore part of the SN-Network. 
