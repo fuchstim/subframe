@@ -1,20 +1,24 @@
 package settings
 
 import (
+	"encoding/json"
 	"flag"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 //BootstrapNode is used for Bootstrapping the local instance
 var BootstrapNode string = ""
 
-//DataPath is used to store message files
+//DataPath is used to store message and database files
 var DataPath string = "./data"
 
-//InterfaceAddress is used to access the local instance remotely
-var InterfaceAddress string = "localhost:9123"
+//RemoteAddress is used to access the local instance remotely
+var RemoteAddress string = "localhost:9123"
 
-//StorageAddress is the IP and Port the StorageNode instance listens on
-var StorageAddress string = "0.0.0.0:9123"
+//LocalAddress is the IP and Port the StorageNode instance listens on
+var LocalAddress string = "0.0.0.0:9123"
 
 //DiskSpace is the maximum space used for message storage
 var DiskSpace int = 5000
@@ -37,22 +41,55 @@ var MessageMaxStoreTime int = 7
 //Read reads settings from local storage and overwrites them with command-line-arguments
 func Read() {
 	println("Reading Settings...")
-	///Read Settings from disk, then overwrite with command line args
+
+	jsonstring, err := ioutil.ReadFile(DataPath + "/settings.json")
+	if err == nil {
+		data := make(map[string]interface{})
+		err := json.Unmarshal(jsonstring, &data)
+		if err == nil {
+			RemoteAddress = data["RemoteAddress"].(string)
+			LocalAddress = data["LocalAddress"].(string)
+			DiskSpace = int(data["DiskSpace"].(float64))
+			MaxWorkers = int(data["MaxWorkers"].(float64))
+			QueueMaxLength = int(data["QueueMaxLength"].(float64))
+			MessageMaxSize = int64(data["MessageMaxSize"].(float64))
+			MessageMinCheckDelay = int(data["MessageMinCheckDelay"].(float64))
+			MessageMaxStoreTime = int(data["MessageMaxStoreTime"].(float64))
+		}
+	}
 
 	parseCommandLineArgs()
 	println("Read Settings.")
+	Write()
 }
 
 //Write writes settings to local storage
-func Write(path string, settings *map[string]string) {
+func Write() {
 	//Write settings to disk
+	data := make(map[string]interface{})
+	data["RemoteAddress"] = RemoteAddress
+	data["LocalAddress"] = LocalAddress
+	data["DiskSpace"] = DiskSpace
+	data["MaxWorkers"] = MaxWorkers
+	data["QueueMaxLength"] = QueueMaxLength
+	data["MessageMaxSize"] = MessageMaxSize
+	data["MessageMinCheckDelay"] = MessageMinCheckDelay
+	data["MessageMaxStoreTime"] = MessageMaxStoreTime
+
+	jsonstring, err := json.MarshalIndent(data, "", "\t")
+	f, err := os.Create(DataPath + "/settings.json")
+	if err != nil {
+		log.Panic(err)
+	}
+	f.Write(jsonstring)
+	f.Close()
 }
 
 func parseCommandLineArgs() {
 	flag.StringVar(&BootstrapNode, "bootstrap-node", BootstrapNode, "If set, SuBFraMe will reinitialize the local Node Database and sync it with the BootstrapNode")
-	flag.StringVar(&DataPath, "data-dir", DataPath, "The SuBFraMe data directory, messages will be stored here")
-	flag.StringVar(&InterfaceAddress, "interface-addr", InterfaceAddress, "The address of this SuBFraMe Instance")
-	flag.StringVar(&StorageAddress, "storage-address", StorageAddress, "The IP and Port the StorageNode Interface will listen on")
+	flag.StringVar(&DataPath, "data-dir", DataPath, "The SuBFraMe data directory, messages, databases and settings will be stored here")
+	flag.StringVar(&RemoteAddress, "remote-address", RemoteAddress, "The remote address of this SuBFraMe Instance")
+	flag.StringVar(&LocalAddress, "local-address", LocalAddress, "The IP and Port the Node Interface will listen on")
 	flag.IntVar(&DiskSpace, "disk-space", DiskSpace, "The maximum space SuBFraMe will use to store Messages in MB")
 	flag.IntVar(&MaxWorkers, "max-workers", MaxWorkers, "The maximum number of worker threads")
 	flag.IntVar(&QueueMaxLength, "max-queue-length", QueueMaxLength, "The maximum size a queue can have before a new worker is spawned, before exceeding max-workers")

@@ -23,10 +23,10 @@ var storageNodeActions = []string{
 }
 
 func startStorageNodeAPIService() {
-	println("Starting HTTP Server at " + settings.StorageAddress)
+	println("Starting HTTP Server at " + settings.LocalAddress)
 	http.HandleFunc("/storage/", handleRequest)
 	go func() {
-		log.Fatal(http.ListenAndServe(settings.StorageAddress, nil))
+		log.Fatal(http.ListenAndServe(settings.LocalAddress, nil))
 	}()
 }
 
@@ -148,7 +148,7 @@ func (r storageRequest) handlePut() {
 		//Announce MessageID to CoordinatorNetwork
 		var redistribute string
 		for _, value := range coordinatorNodes {
-			redistribute = SendNodeRequest(NODE_COORDINATOR, value, "/announce/"+messageID+"/"+settings.InterfaceAddress, "")
+			redistribute = SendNodeRequest(NODE_COORDINATOR, value, "/announce/"+messageID+"/"+settings.RemoteAddress, "")
 		}
 		if redistribute == "true" {
 			//TODO: Push Message to other StorageNodes

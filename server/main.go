@@ -16,7 +16,7 @@ func main() {
 	println("Initializing SuBFraMe Server...")
 	jobqueue.SpawnWorker()
 	settings.Read()
-	//defer settings.Write()
+	defer settings.Write()
 	networking.Init()
 	defer networking.Stop()
 	storage.Init()
