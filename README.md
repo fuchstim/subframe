@@ -5,9 +5,10 @@
 1. [What is SuBFraMe?](#what-is-subframe)
 2. [Download and Install](#download-and-install)
 3. [Contributing](CONTRIBUTING.md)
-4. [How does it work?](#how-does-it-work)
+4. [How does it work? - Overview](#how-does-it-work)
 5. [Sending a Message](#sending-a-message)
 6. [Advantages and Disadvantages](#advantages)
+7. [Protocol](#protocol)
 
 #### What is SubFraMe?
 SuBFraMe stands for **S**ec**u**rely **B**roadcasted and **Fra**gmented **Me**ssaging. It is a concept for an entirely decentralized, extensible network used primarily for email-like communication.
@@ -82,3 +83,6 @@ CoordinatorNodes with a bad connection may be kicked from the CoordinatorNetwork
 -  Sender's identify cannot be reliably verified without a secure way of exchanging PublicKeys; meeting physically and using uncompromised systems
 -  Using multiple devices to receive messages for the same address will be rather complicated, as the message is removed from the Network once it has been decrypted and verified, or reached its TTL
 -  ...
+
+#### Protocol
+More detailed information about Network communication you can find in [PROTOCOL.md](PROTOCOL.md)
