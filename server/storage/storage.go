@@ -1,39 +1,65 @@
 package storage
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
+	"subframe/server/database"
+	"subframe/server/logger"
 	"subframe/server/settings"
 	"subframe/structs/message"
 )
 
 var messagesPath string
 var databasePath string
+var logPath string
+var log = logger.Logger{Prefix: "storage/Main"}
 
 //Init intializes the data directory
 func Init() {
+	log.Info("Initializing Storage Directories...")
 	createDirIfNotExist(settings.DataPath)
+	log.Info("Initialized " + settings.DataPath)
+
 	messagesPath = settings.DataPath + "/messages"
 	createDirIfNotExist(messagesPath)
+	log.Info("Initialized " + messagesPath)
+
 	databasePath = settings.DataPath + "/databases"
 	createDirIfNotExist(databasePath)
+	log.Info("Initialized " + databasePath)
+
+	logPath = settings.DataPath + "/logs"
+	createDirIfNotExist(logPath)
+	logger.LogPath = logPath
+
+	log.Info("Initialized " + logPath)
 }
 
 //Finish might do something soon
 func Finish() {
+	log.Info("Finishing Storage...")
 
+	log.Info("Finished Storage.")
 }
 
 //Get loads a message from local disk
 func Get(id string) (msg message.Message, status int) {
 	//Read message from disk and return
-	dat, err := ioutil.ReadFile(messagesPath + id)
-	if err != nil {
+	log.Info("Getting Message " + id + "...")
+
+	if !database.CheckMessageStorage(id) {
+		log.Warn("Error getting Message " + id + ": Not in database")
 		return message.Message{}, http.StatusNotFound
 	}
+
+	dat, err := ioutil.ReadFile(messagesPath + "/" + id)
+	if err != nil {
+		log.Warn("Error getting Message " + id + ": " + err.Error())
+		return message.Message{}, http.StatusNotFound
+	}
+	log.Info("Got Message " + id)
 	return message.Message{
 		ID:      id,
 		Content: string(dat),
@@ -45,25 +71,36 @@ func Put(msg message.Message) (status int) {
 	id := msg.ID
 	content := []byte(msg.Content)
 
+	log.Info("Putting Message " + id)
+
+	if database.CheckMessageStorage(id) {
+		log.Error("Error storing Message " + id + ": Already in database")
+		return http.StatusConflict
+	}
+
 	if !checkStorageSpace(len(content)) {
+		log.Warn("Could not store Message " + id + ": Insufficient Storage.")
 		return http.StatusInsufficientStorage
 	}
 
-	if _, err := os.Stat(messagesPath + id); os.IsNotExist(err) {
-		err := ioutil.WriteFile(messagesPath+id, content, 0600)
+	if _, err := os.Stat(messagesPath + "/" + id); os.IsNotExist(err) {
+		err = ioutil.WriteFile(messagesPath+"/"+id, content, 0600)
 		if err != nil {
-			fmt.Println(err)
+			log.Error("Error storing Message " + id + ": " + err.Error())
 			return http.StatusInternalServerError
 		}
-		//Write message to disk
+
+		log.Info("Successfully stored Message " + id)
 		return http.StatusOK
 	}
+	log.Error("Error storing Message " + id + ": File exists")
 	return http.StatusConflict
 }
 
 //Delete removes a message from local disk
 func Delete(id string) (status int) {
 	//Delete message from disk
+	log.Fatal("Method DELETE not yet implemented")
 	return http.StatusOK
 }
 
@@ -72,10 +109,10 @@ func createDirIfNotExist(dir string) {
 	//TODO: Fix error on windows reporting directories exists when they do not
 	_, err := os.Stat(dir)
 	if os.IsNotExist(err) {
-		fmt.Println(dir + " does not exist")
+		log.Warn("Directory " + dir + " does not exist. Creating...")
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			panic(err)
+			log.Fatal("Directory " + dir + " could not be created: " + err.Error())
 		}
 	}
 }

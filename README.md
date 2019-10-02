@@ -5,19 +5,22 @@
 1. [What is SuBFraMe?](#what-is-subframe)
 2. [Download and Install](#download-and-install)
 3. [Contributing](CONTRIBUTING.md)
-4. [How does it work?](#how-does-it-work)
+4. [How does it work? - Overview](#how-does-it-work)
 5. [Sending a Message](#sending-a-message)
 6. [Advantages and Disadvantages](#advantages)
+7. [Protocol](#protocol)
 
 #### What is SubFraMe?
 SuBFraMe stands for **S**ec**u**rely **B**roadcasted and **Fra**gmented **Me**ssaging. It is a concept for an entirely decentralized, extensible network used primarily for email-like communication.
 
 #### Download and Install
-Currently, there is no working Version of SuBFraMe available. If you wish to contribute to make SuBFraMe a reality, see [#Contributing](#contributing)
+Currently, there is no (usable) working Version of SuBFraMe available. If you are interested in contributing to make SuBFraMe a reality, see [#Contributing](#contributing)
 
 #### Contributing
 If you are interested in the SuBFraMe Project and want to contribute, you can find a guide on how to get you set up in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 Any help is greatly appreciated and will help make communication more secure and uncensored!
+
+**If you want to actively support and contribute to the SuBFraMe - Project,** please consider joining [our Discord](https://discord.gg/HwTebxs). This is not required, but makes communication easier and helps to resolve questions, uncertainties or problems. Discord is free to use, can be used completely in-browser and is substancially faster than #Slack.
 
 #### How does it work?
 The SubFraMe Network consists of two kinds of Nodes: StorageNodes and CoordinatorNodes (SN and CN respectively). CNs represent a small fragment of and are therefore part of the SN-Network. 
@@ -80,3 +83,6 @@ CoordinatorNodes with a bad connection may be kicked from the CoordinatorNetwork
 -  Sender's identify cannot be reliably verified without a secure way of exchanging PublicKeys; meeting physically and using uncompromised systems
 -  Using multiple devices to receive messages for the same address will be rather complicated, as the message is removed from the Network once it has been decrypted and verified, or reached its TTL
 -  ...
+
+#### Protocol
+More detailed information about Network communication you can find in [PROTOCOL.md](PROTOCOL.md)

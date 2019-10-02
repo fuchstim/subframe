@@ -1,4 +1,4 @@
-![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-nobg_medium.png)
+![SuBFraMe - Logo](https://www.fuchstim.de/subframe/res/img/logo/logo-1-text_small.png#)
 # How to Contribute to the SuBFraMe Project
 Here, You will find a guide on how to contribute to the SuBFraMe Project. These Information might be subject to change, so it might be useful to check back every once and again!
 
