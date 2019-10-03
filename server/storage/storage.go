@@ -8,6 +8,7 @@ import (
 	"subframe/server/database"
 	"subframe/server/logger"
 	"subframe/server/settings"
+	. "subframe/status"
 	"subframe/structs/message"
 )
 
@@ -16,32 +17,32 @@ var databasePath string
 var logPath string
 var log = logger.Logger{Prefix: "storage/Main"}
 
-//Init intializes the data directory
+//Init initializes the data directory
 func Init() {
-	log.Info("Initializing Storage Directories...")
+	log.Info(InProgress, "Initializing Storage Directories...")
 	createDirIfNotExist(settings.DataPath)
-	log.Info("Initialized " + settings.DataPath)
+	log.Info(OK, "Initialized "+settings.DataPath)
 
 	messagesPath = settings.DataPath + "/messages"
 	createDirIfNotExist(messagesPath)
-	log.Info("Initialized " + messagesPath)
+	log.Info(OK, "Initialized "+messagesPath)
 
 	databasePath = settings.DataPath + "/databases"
 	createDirIfNotExist(databasePath)
-	log.Info("Initialized " + databasePath)
+	log.Info(OK, "Initialized "+databasePath)
 
 	logPath = settings.DataPath + "/logs"
 	createDirIfNotExist(logPath)
 	logger.LogPath = logPath
 
-	log.Info("Initialized " + logPath)
+	log.Info(OK, "Initialized "+logPath)
 }
 
 //Finish might do something soon
 func Finish() {
-	log.Info("Finishing Storage...")
+	log.Info(InProgress, "Finishing Storage...")
 
-	log.Info("Finished Storage.")
+	log.Info(OK, "Finished Storage.")
 }
 
 //Get loads a message from local disk

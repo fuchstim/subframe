@@ -6,46 +6,47 @@ import (
 	"io/ioutil"
 	"os"
 	"subframe/server/logger"
+	. "subframe/status"
 )
 
 var log = logger.Logger{Prefix: "settings/Main"}
 
 //BootstrapNode is used for Bootstrapping the local instance
-var BootstrapNode string = ""
+var BootstrapNode = ""
 
 //DataPath is used to store message and database files
-var DataPath string = "./data"
+var DataPath = "./data"
 
 //RemoteAddress is used to access the local instance remotely
-var RemoteAddress string = "localhost:9123"
+var RemoteAddress = "localhost:9123"
 
 //LocalAddress is the IP and Port the StorageNode instance listens on
-var LocalAddress string = "0.0.0.0:9123"
+var LocalAddress = "0.0.0.0:9123"
 
 //DiskSpace is the maximum space used for message storage
-var DiskSpace int = 5000
+var DiskSpace = 5000
 
 //MaxWorkers is the maximum number of workers to spawn
-var MaxWorkers int = 10
+var MaxWorkers = 10
 
 //QueueMaxLength is the maximum length of a queue before a new worker is spawned, if the current worker count does not exceed MaxWorkers
-var QueueMaxLength int = 10
+var QueueMaxLength = 10
 
 //MessageMaxSize defines the maximum size of an individual message file
-var MessageMaxSize int = 100
+var MessageMaxSize = 100
 
 //MessageMinCheckDelay defines the minimum time in hours between individual checks of the message status
-var MessageMinCheckDelay int = 12
+var MessageMinCheckDelay = 12
 
 //MessageMaxStoreTime defines the maximum time a message is stored locally, in days
-var MessageMaxStoreTime int = 7
+var MessageMaxStoreTime = 7
 
 //ColorizedOutput defines whether realtime logs should be colorized
-var ColorizedLogs bool = false
+var ColorizedLogs = false
 
 //Read reads settings from local storage and overwrites them with command-line-arguments
 func Read() {
-	log.Info("Reading Settings...")
+	log.Info(InProgress, "Reading Settings...")
 	jsonstring, err := ioutil.ReadFile(DataPath + "/settings.json")
 	if err == nil {
 		data := make(map[string]interface{})
@@ -86,19 +87,21 @@ func Read() {
 			}
 
 			ColorizedLogs, _ = data["ColorizedLogs"].(bool)
+		} else {
+			log.Warn(SettingsReadError, "Failed to read settings from file ("+err.Error()+"). Falling back to defaults or using command line arguments...")
 		}
 	}
 
 	parseCommandLineArgs()
 	logger.ColorizedLogs = ColorizedLogs
-	log.Info("Successfully read Settings.")
+	log.Info(OK, "Successfully read Settings.")
 	Write()
 }
 
 //Write writes settings to local storage
 func Write() {
 	//Write settings to disk
-	log.Info("Writing settings...")
+	log.Info(InProgress, "Writing settings...")
 	data := make(map[string]interface{})
 	data["RemoteAddress"] = RemoteAddress
 	data["LocalAddress"] = LocalAddress
@@ -113,15 +116,15 @@ func Write() {
 	jsonstring, err := json.MarshalIndent(data, "", "\t")
 	f, err := os.Create(DataPath + "/settings.json")
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(SettingsWriteError, err.Error())
 	}
 	f.Write(jsonstring)
 	f.Close()
-	log.Info("Wrote settings to " + DataPath + "/settings.json")
+	log.Info(OK, "Wrote settings to "+DataPath+"/settings.json")
 }
 
 func parseCommandLineArgs() {
-	log.Info("Parsing Commandline Arguments...")
+	log.Info(InProgress, "Parsing Commandline Arguments...")
 	flag.StringVar(&BootstrapNode, "bootstrap-node", BootstrapNode, "If set, SuBFraMe will reinitialize the local Node Database and sync it with the BootstrapNode")
 	flag.StringVar(&DataPath, "data-dir", DataPath, "The SuBFraMe data directory, messages, databases and settings will be stored here")
 	flag.StringVar(&RemoteAddress, "remote-address", RemoteAddress, "The remote address of this SuBFraMe Instance")
@@ -134,5 +137,5 @@ func parseCommandLineArgs() {
 	flag.IntVar(&MessageMaxStoreTime, "message-max-store-time", MessageMaxStoreTime, "The maximum time a message is stored locally, in days")
 	flag.BoolVar(&ColorizedLogs, "colorized-output", ColorizedLogs, "Turns on or off colorized realtime logs")
 	flag.Parse()
-	log.Info("Parsed Commandline Arguments.")
+	log.Info(OK, "Parsed Commandline Arguments.")
 }

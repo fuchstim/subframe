@@ -8,6 +8,8 @@ import (
 	"subframe/server/logger"
 	"subframe/server/networking"
 	"subframe/server/settings"
+	. "subframe/status"
+	"subframe/structs/node"
 )
 
 var log = logger.Logger{Prefix: "bootstrapper/Main"}
@@ -16,44 +18,44 @@ var log = logger.Logger{Prefix: "bootstrapper/Main"}
 func Bootstrap() {
 	bootstrapNode := settings.BootstrapNode
 	if bootstrapNode == "" {
-		log.Info("No BootstrapNode set. Skipping Bootstrapping.")
+		log.Info(OK, "No BootstrapNode set. Skipping Bootstrapping.")
 		return
 	}
 
-	log.Info("Bootstrapping with Node " + settings.BootstrapNode + "...")
+	log.Info(InProgress, "Bootstrapping with Node "+settings.BootstrapNode+"...")
 
 	if database.ClearNodeTables() != 200 {
-		log.Fatal("Could not clear databases before bootstrapping.")
+		log.Fatal(DBWriteError, "Could not clear databases before bootstrapping.")
 	}
 	pullStorageNodes()
 	pullCoordinatorNodes()
 }
 
 func pullStorageNodes() {
-	log.Info("Pulling StorageNodes...")
-	response := networking.SendNodeRequest(networking.NODE_STORAGE, settings.BootstrapNode, "/control/get-storage-nodes", "")
-	var storageNodes []string
+	log.Info(InProgress, "Pulling StorageNodes...")
+	status, response := networking.SendNodeRequest(networking.NODE_STORAGE, settings.BootstrapNode, "/control/get-storage-nodes", "")
+	var storageNodes []node.Node
 	err := json.Unmarshal([]byte(response), &storageNodes)
 
-	if response == "" || err != nil {
-		if response == "" {
-			log.Fatal("Error getting StorageNodes: Empty Response")
-		} else {
-			log.Fatal("Error getting StorageNodes: " + err.Error())
-		}
+	if status != OK {
+		log.Fatal(status, "Error getting StorageNodes")
+	}
+
+	if err != nil {
+		log.Fatal(GenericInternalError, "Error getting StorageNodes: "+err.Error())
 	}
 
 	task := func(data interface{}) {
 		log := logger.Logger{Prefix: "bootstrapper/DatabaseThread-StorageNodes"}
-		storageNodes, ok := data.([]string)
+		storageNodes, ok := data.([]node.Node)
 		if !ok {
-			log.Error("Failed to add StorageNodes to Database")
+			log.Error(GenericInternalError, "Failed to add StorageNodes to Database")
 			return
 		}
 		for _, node := range storageNodes {
-			ping := networking.Ping(node)
-			database.AddStorageNode(node, ping)
-			log.Info("Added StorageNode " + node + " with Ping " + strconv.Itoa(ping) + " to Database")
+			node.Ping = networking.Ping(node.Address)
+			database.AddStorageNode(node)
+			log.Info(OK, "Added StorageNode "+node.Address+" with Ping "+strconv.Itoa(node.Ping)+" to Database")
 		}
 	}
 	job := jobqueue.Job{
@@ -63,34 +65,34 @@ func pullStorageNodes() {
 	select {
 	case jobqueue.Queue <- job:
 	}
-	log.Info("Pulled StorageNodes.")
+	log.Info(OK, "Pulled StorageNodes.")
 }
 
 func pullCoordinatorNodes() {
-	log.Info("Pulling CoordinatorNodes...")
-	response := networking.SendNodeRequest(networking.NODE_STORAGE, settings.BootstrapNode, "/control/get-coordinator-nodes", "")
-	var coordinatorNodes []string
+	log.Info(InProgress, "Pulling CoordinatorNodes...")
+	status, response := networking.SendNodeRequest(networking.NODE_STORAGE, settings.BootstrapNode, "/control/get-coordinator-nodes", "")
+	var coordinatorNodes []node.Node
 	err := json.Unmarshal([]byte(response), &coordinatorNodes)
 
-	if response == "" || err != nil {
-		if response == "" {
-			log.Fatal("Error getting CoordinatorNodes: Empty Response")
-		} else {
-			log.Fatal("Error getting CoordinatorNodes: " + err.Error())
-		}
+	if status != OK {
+		log.Fatal(status, "Error getting Coordinator Nodes")
+	}
+
+	if err != nil {
+		log.Fatal(GenericInternalError, "Error getting CoordinatorNodes: "+err.Error())
 	}
 
 	task := func(data interface{}) {
 		log := logger.Logger{Prefix: "bootstrapper/DatabaseThread-CoordinatorNodes"}
-		coordinatorNodes, ok := data.([]string)
+		coordinatorNodes, ok := data.([]node.Node)
 		if !ok {
-			log.Error("Failed to add CoordinatorNodes to Database")
+			log.Error(DBWriteError, "Failed to add CoordinatorNodes to Database")
 			return
 		}
 		for _, node := range coordinatorNodes {
-			ping := networking.Ping(node)
-			database.AddCoordinatorNode(node, ping)
-			log.Info("Added CoordinatorNode " + node + " with Ping " + strconv.Itoa(ping) + " to Database")
+			node.Ping = networking.Ping(node.Address)
+			database.AddCoordinatorNode(node)
+			log.Info(OK, "Added CoordinatorNode "+node.Address+" with Ping "+strconv.Itoa(node.Ping)+" to Database")
 		}
 	}
 	job := jobqueue.Job{
@@ -100,5 +102,5 @@ func pullCoordinatorNodes() {
 	select {
 	case jobqueue.Queue <- job:
 	}
-	log.Info("Pulled CoordinatorNodes.")
+	log.Info(OK, "Pulled CoordinatorNodes.")
 }

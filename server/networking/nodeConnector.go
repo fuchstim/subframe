@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"subframe/server/database"
 	"subframe/server/logger"
+	. "subframe/status"
 )
 
 var nlog = logger.Logger{Prefix: "networking/NodeConnector"}
@@ -18,17 +19,17 @@ var NODE_STORAGE = 1
 var NODE_COORDINATOR = 2
 
 //SendNodeRequest sends a synchronous request to the specified node
-func SendNodeRequest(nodeType int, address string, queryString string, data string) (response string) {
+func SendNodeRequest(nodeType int, address string, queryString string, data string) (status int, response []byte) {
 	switch nodeType {
 	case NODE_STORAGE:
 		return sendStorageNodeRequest(address, queryString, data)
 	case NODE_COORDINATOR:
 		return sendCoordinatorNodeRequest(address, queryString)
 	}
-	return ""
+	return NetworkingBadNodeType, nil
 }
 
-func sendStorageNodeRequest(address string, queryString string, data string) (response string) {
+func sendStorageNodeRequest(address string, queryString string, data string) (status int, response []byte) {
 	var resp *http.Response
 	var err error
 	if data == "" {
@@ -43,7 +44,7 @@ func sendStorageNodeRequest(address string, queryString string, data string) (re
 	}
 	if err != nil {
 		nlog.Error("Error sending request: " + err.Error())
-		return ""
+		return SNNetworkingOutgoingRequestError, nil
 	}
 	defer resp.Body.Close()
 
@@ -51,20 +52,20 @@ func sendStorageNodeRequest(address string, queryString string, data string) (re
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		nlog.Error("Error reading response: " + err.Error())
-		return ""
+		return SNNetworkingReadingResponseError, nil
 	}
 
 	nlog.Info("Read response.")
-	return string(body)
+	return OK, body
 }
 
-func sendCoordinatorNodeRequest(address string, queryString string) (response string) {
+func sendCoordinatorNodeRequest(address string, queryString string) (status int, response []byte) {
 	//TODO: Send Request, get response; if in coordinator network send request via socket
 	nlog.Info("Sending CoordinatorNode HTTP Request to " + address + "/coordinator" + queryString + "...")
 	resp, err := http.Get(address + "/coordinator" + queryString)
 	if err != nil {
 		nlog.Error("Error sending request: " + err.Error())
-		return ""
+		return CNNetworkingOutgoingRequestError, nil
 	}
 	defer resp.Body.Close()
 
@@ -72,11 +73,11 @@ func sendCoordinatorNodeRequest(address string, queryString string) (response st
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		nlog.Error("Error reading response: " + err.Error())
-		return ""
+		return CNNetworkingReadingResponseError, nil
 	}
 
 	nlog.Info("Read response")
-	return string(body)
+	return OK, body
 }
 
 //Ping returns the current Ping to the specified address
@@ -94,16 +95,23 @@ func Ping(address string) (ping int) {
 func GetMessageStatus(messageID string) (status int) {
 	nlog.Info("Getting Status for Message " + messageID + " from CoordinatorNetwork...")
 	//If Message is not present in local database, no need to check status
-	if !database.CheckMessageStorage(messageID) {
+	s, isStored := database.CheckMessageStorage(messageID)
+
+	if s != OK {
+		nlog.Error("Failed to check whether message is stored on this Node. Aborting...")
+		return
+	}
+
+	if isStored {
 		nlog.Error("Message " + messageID + " does not appear to be stored on this Node.")
 		return
 	}
 
 	//Get Status from up to three different coordinator nodes
 	nlog.Info("Getting CoordinatorNodes...")
-	coordinatorNodes := database.GetRandomCoordinatorNodes(3)
-	if len(coordinatorNodes) == 0 {
-		nlog.Error("Did not receive any CoordinatorNodes.")
+	s, coordinatorNodes := database.GetRandomCoordinatorNodes(3)
+	if s != OK {
+		nlog.Error("Failed to get CoordinatorNodes.")
 		return
 	}
 	nlog.Info("Got " + strconv.Itoa(len(coordinatorNodes)) + " CoordinatorNodes.")

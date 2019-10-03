@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"subframe/server/logger"
 	"subframe/server/settings"
+	. "subframe/status"
 	"time"
 )
 
@@ -28,17 +29,17 @@ type worker struct {
 }
 
 func (sw worker) start() {
-	log.Info("Starting worker " + sw.id + ".")
+	log.Info(InProgress, "Starting worker "+sw.id+".")
 	go func() {
 		for {
 			workerCount := len(workerPool)
 			queueLength := len(Queue)
 
 			if workerCount < settings.MaxWorkers && queueLength >= settings.QueueMaxLength {
-				log.Info("Queue length exceeds settings.MaxQueueLength.")
+				log.Info(JQQueueTooLong, "Queue length exceeds settings.MaxQueueLength. Trying to spawn new worker...")
 				SpawnWorker()
 			} else if workerCount > 1 && queueLength <= settings.QueueMaxLength {
-				log.Info("Too many workers for current queue length. Killing worker " + sw.id + "...")
+				log.Info(JQTooManyWorkers, "Too many workers for current queue length. Killing worker "+sw.id+"...")
 				sw.die <- true
 			}
 			select {
@@ -48,7 +49,7 @@ func (sw worker) start() {
 				}
 			case <-sw.die:
 				{
-					log.Info("Worker " + sw.id + " killed.")
+					log.Info(InProgress, "Killing worker "+sw.id+"...")
 					removeWorkerFromPool(sw.id)
 					return
 				}
@@ -65,16 +66,16 @@ var Queue = make(chan Job)
 //SpawnWorker spawns a new Worker, if MaxWorkers setting allows it
 func SpawnWorker() {
 	if len(workerPool) >= settings.MaxWorkers {
-		log.Warn("settings.MaxWorkers does not allow for a new Worker to be spawned.")
+		log.Warn(JQTooManyWorkers, "settings.MaxWorkers does not allow for a new Worker to be spawned.")
 		return
 	}
-	log.Info("Spawning and starting new Worker...")
+	log.Info(InProgress, "Spawning and starting new Worker...")
 	worker := worker{
 		id:  strconv.FormatInt(time.Now().Unix(), 16),
 		die: make(chan bool),
 	}
 	workerPool = append(workerPool, &worker)
-	log.Info("New worker count: " + strconv.Itoa(len(workerPool)))
+	log.Info(OK, "New worker count: "+strconv.Itoa(len(workerPool)))
 	worker.start()
 }
 
@@ -85,4 +86,5 @@ func removeWorkerFromPool(id string) {
 			workerPool = append(workerPool[:index], workerPool[index+1:]...)
 		}
 	}
+	log.Info(OK, "Worker "+id+" killed.")
 }

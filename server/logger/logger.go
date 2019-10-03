@@ -6,6 +6,7 @@ import (
 	"github.com/bclicn/color"
 	"os"
 	"strconv"
+	"subframe/status"
 	"time"
 )
 
@@ -62,27 +63,28 @@ type Log struct {
 	Time    time.Time
 	Prefix  string
 	Type    int
+	Status  int
 	Message string
 }
 
 //Info logs an info-message
-func (l Logger) Info(message string) {
-	mainLogger(Log{time.Now(), l.Prefix, LogtypeInfo, message})
+func (l Logger) Info(status int, message string) {
+	mainLogger(Log{time.Now(), l.Prefix, LogtypeInfo, status, message})
 }
 
 //Warn logs a warn-message
-func (l Logger) Warn(message string) {
-	mainLogger(Log{time.Now(), l.Prefix, LogtypeWarn, message})
+func (l Logger) Warn(status int, message string) {
+	mainLogger(Log{time.Now(), l.Prefix, LogtypeWarn, status, message})
 }
 
 //Error logs an error-message
-func (l Logger) Error(message string) {
-	mainLogger(Log{time.Now(), l.Prefix, LogtypeError, message})
+func (l Logger) Error(status int, message string) {
+	mainLogger(Log{time.Now(), l.Prefix, LogtypeError, status, message})
 }
 
 //Fatal logs a fatal message and panics
-func (l Logger) Fatal(message string) {
-	mainLogger(Log{time.Now(), l.Prefix, LogtypeFatal, message})
+func (l Logger) Fatal(status int, message string) {
+	mainLogger(Log{time.Now(), l.Prefix, LogtypeFatal, status, message})
 	panic(errors.New(message))
 }
 
@@ -117,6 +119,7 @@ func logToFile(logLine string) {
 				time.Now(),
 				"logger/Logger",
 				LogtypeInfo,
+				status.OK,
 				"Writing logQueue (" + strconv.Itoa(len(logQueue)) + " Elements) to logfile...",
 			}
 			if ColorizedLogs {
@@ -135,6 +138,7 @@ func logToFile(logLine string) {
 				time.Now(),
 				"logger/Logger",
 				LogtypeInfo,
+				status.OK,
 				"Wrote logQueue to logfile...",
 			}
 
@@ -172,10 +176,14 @@ func formatLogType(logType int) (formatted string) {
 	return "[" + logtypeDescriptions[logType-1] + "]"
 }
 
+func formatStatusCode(status int) (formatted string) {
+	return "[" + strconv.Itoa(status) + "]"
+}
+
 func formatLogLine(l Log) (line string) {
 	//Format like:
-	//[Mon Jan 1 12:13:14 2019] [INFO] [logger/Init] Initialized Logger.
-	return formatTime(l.Time) + " " + formatLogType(l.Type) + " " + formatPrefix(l.Prefix) + " " + l.Message
+	//[Mon Jan 1 12:13:14 2019] [INFO] [logger/Init] [1000] Initialized Logger.
+	return formatTime(l.Time) + " " + formatLogType(l.Type) + " " + formatPrefix(l.Prefix) + " " + formatStatusCode(l.StatusCode) + " " + l.Message
 }
 
 func formatTimeCLI(t time.Time) (formatted string) {

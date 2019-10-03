@@ -10,6 +10,7 @@ import (
 	"subframe/server/networking"
 	"subframe/server/settings"
 	"subframe/server/storage"
+	. "subframe/status"
 )
 
 var log = logger.Logger{Prefix: "main/Main"}
@@ -17,8 +18,8 @@ var greeter = "                  .--.                  \n              `-/oooooo
 
 func main() {
 	println(greeter)
-	log.Info("Welcome to SuBFraMe Server!")
-	log.Info("Initializing Server...")
+	log.Info(OK, "Welcome to SuBFraMe Server!")
+	log.Info(InProgress, "Initializing Server...")
 
 	settings.Read()
 	defer settings.Write()
@@ -44,6 +45,6 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 
 	<-c
-	log.Info("Stopping SuBFraMe Server...")
+	log.Info(InProgress, "Stopping SuBFraMe Server...")
 	return
 }
