@@ -1,0 +1,25 @@
+{
+  "name": "subframe",
+  "version": "1.0.0",
+  "description": "SuBFraMe is a decentralized and encryted messaging service",
+  "main": "src",
+  "scripts": {
+    "start": "forever src/",
+    "dev": "nodemon src/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuchstim/subframe.git"
+  },
+  "author": "Tim Fuchs",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/fuchstim/subframe/issues"
+  },
+  "homepage": "https://github.com/fuchstim/subframe#readme",
+  "dependencies": {
+    "forever": "^2.0.0",
+    "nodemon": "^2.0.2"
+  }
+}
