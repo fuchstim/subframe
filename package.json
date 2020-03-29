@@ -6,6 +6,7 @@
   "scripts": {
     "start": "forever src/",
     "dev": "nodemon src/",
+    "debug": "nodemon --inspect=127.0.0.1:9222 ./src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,11 @@
   "homepage": "https://github.com/fuchstim/subframe#readme",
   "dependencies": {
     "forever": "^2.0.0",
+    "express": "^4.17.1",
+    "eslint": "^6.8.0",
+    "node-datetime": "^2.1.2"
+  },
+  "devDependencies": {
     "nodemon": "^2.0.2"
   }
 }
