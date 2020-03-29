@@ -11,7 +11,7 @@ class Logger {
     info = (message) => console.log(outputOptions.textColor.green, this.formatMessage('INF', message))
     warn = (message) => console.log(outputOptions.textColor.yellow, this.formatMessage('WRN', message))
     error = (message) => console.log(outputOptions.textColor.red, this.formatMessage('ERR', message))
-    fatal = (message) => console.log(outputOptions.textBackgroundColor.red, outputOptions.textColor.white, this.formatMessage('FAT', message))
+    fatal = (message) => console.log(outputOptions.textBackgroundColor.red, outputOptions.textColor.white, this.formatMessage('FAT', message), outputOptions.textBackgroundColor.default)
 
     formatMessage = (status, message) => `[${status}] ${dateTime.create().format('Y-m-d H:M:S')} (${this.context}): ${message}`
 }

@@ -4,8 +4,12 @@
         "port": 3000
     },
     "storage": {
-        "path": "/Users/timfuchs/dev/subframe/data/storage",
-        "maxSize": "512M"
+        "path": {
+            "files": "/Users/timfuchs/dev/subframe/data/storage/files",
+            "database": "/Users/timfuchs/dev/subframe/data/storage/database"
+        },
+        "maxBlockCount": "512",
+        "blockSize": "2048"
     },
     "logs": {
         "path": "/Users/timfuchs/dev/subframe/data/logs",

@@ -11,7 +11,7 @@ class NamedError extends Error {
         this.message = message
         this.additionalInformation = additionalInformation
 
-        Error.captureStackTrace(this, this.constructor);
+        Error.captureStackTrace(this, this.constructor)
     }
 
     toString = (prependErrorCode = true) => (prependErrorCode ? `[${this.code}] ` : '') + `${this.message}`

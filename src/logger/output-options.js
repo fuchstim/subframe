@@ -10,6 +10,7 @@ module.exports.textColor = {
 }
 
 module.exports.textBackgroundColor = {
+    default: "\x1b[0m",
     black: "\x1b[40m",
     red: "\x1b[41m",
     green: "\x1b[42m",
